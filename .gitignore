@@ -1,0 +1,19 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# ADK local storage
+.adk/
+
+# Environment
+.env
+
+# Service Accounts
+charan-245405-f5855dbeb6b0.json
