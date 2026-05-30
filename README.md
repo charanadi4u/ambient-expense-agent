@@ -26,7 +26,7 @@ analysis and **human-in-the-loop approval** before a decision is made.
     </tr>
     <tr>
       <td>☁️</td>
-      <td><strong>Production-Ready Deployment:</strong> One-command <a href="https://www.terraform.io/">Terraform</a> setup — two <a href="https://cloud.google.com/run">Cloud Run</a> services, Pub/Sub, Cloud Monitoring alerts, IAM, and <a href="https://cloud.google.com/iap">IAP</a>.</td>
+      <td><strong>Production-Ready Deployment:</strong> One-command script setup — two <a href="https://cloud.google.com/run">Cloud Run</a> services, Pub/Sub, Cloud Monitoring alerts, IAM, and <a href="https://cloud.google.com/iap">IAP</a>.</td>
     </tr>
   </tbody>
 </table>
@@ -176,15 +176,16 @@ at `http://localhost:8081/approval` to approve or reject it.
 
 Deploy both services and all supporting infrastructure with a single command.
 
-**Prerequisites:** [Google Cloud SDK](https://cloud.google.com/sdk/docs/install), [Terraform](https://www.terraform.io/)
+**Prerequisites:** [Google Cloud SDK](https://cloud.google.com/sdk/docs/install)
 
 ```bash
 gcloud config set project YOUR_PROJECT_ID
-make deploy NOTIFICATION_EMAIL=finance@example.com
+export NOTIFICATION_EMAIL=finance@example.com
+./scripts/deploy.sh
 ```
 
-This builds container images (in parallel) and deploys everything via
-Terraform: two Cloud Run services, Pub/Sub (with dead-letter), Cloud
+This builds container images (in parallel) and deploys everything via the
+deployment script: two Cloud Run services, Pub/Sub (with dead-letter), Cloud
 Monitoring alerts, IAM, and IAP.
 
 > **Note:** IAP can take **5–10 minutes** to fully propagate after the
@@ -199,13 +200,13 @@ make remote-test
 
 This publishes a $250 travel expense. The agent will route it to the review
 agent, analyze risk factors, email an alert to `NOTIFICATION_EMAIL`, and pause
-for human approval. Open the approval UI (URL printed by `make deploy`) to
+for human approval. Open the approval UI (URL printed by the deploy script) to
 approve or reject.
 
 ### Cleanup
 
 ```bash
-make clean NOTIFICATION_EMAIL=finance@example.com
+./scripts/destroy.sh
 ```
 
 ## Customization
@@ -219,7 +220,7 @@ make clean NOTIFICATION_EMAIL=finance@example.com
 | **Approval UI** | Edit `frontend/static/approval.html` |
 | **Downstream actions** | Add workflow nodes for Slack, databases, or notifications |
 | **Multi-level routing** | Add routes (e.g., `ESCALATE` for expenses > $1000) |
-| **Notification channel** | Replace email with Slack, PagerDuty, or SMS in `terraform/monitoring.tf` ([docs](https://cloud.google.com/monitoring/support/notification-options)) |
+| **Notification channel** | Replace email with Slack, PagerDuty, or SMS in `scripts/deploy.sh` ([docs](https://cloud.google.com/monitoring/support/notification-options)) |
 | **Email content** | The alert email uses a static template. To include dynamic expense data (amount, submitter) in the email, switch from log-based metrics to [custom metrics with template variables](https://cloud.google.com/monitoring/alerts/doc-variables) |
 
 ## Troubleshooting
